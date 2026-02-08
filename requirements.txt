@@ -4,3 +4,4 @@ python-dotenv
 google-generativeai
 requests
 pypdf
+grpcio==1.60.0
