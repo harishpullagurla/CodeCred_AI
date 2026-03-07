@@ -10,6 +10,10 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)  # <--- This allows your HTML to talk to Python
 
+@app.route("/")
+def home():
+    return "CodeCred AI Backend Running"
+
 @app.route('/analyze', methods=['POST'])
 def analyze():
     # 1. Check for data (Supports both 'github_user' and 'username')
@@ -36,5 +40,7 @@ def analyze():
         print(f"Error: {e}")
         return jsonify({"analysis": f"<div class='alert alert-danger'>Server Error: {str(e)}</div>"}), 500
 
+import os
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
