@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,render_template
 from flask_cors import CORS  # <--- INSTALL THIS: pip install flask-cors
 from services.ai_service import analyze_with_gemini
 from services.github_service import fetch_github_data
@@ -12,7 +12,7 @@ CORS(app)  # <--- This allows your HTML to talk to Python
 
 @app.route("/")
 def home():
-    return "CodeCred AI Backend Running"
+    return render_template("index.html")
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
