@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeCred AI | Skill Auditor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-orange: #ff6600;
+            --dark-bg: #050505;
+            --panel-bg: rgba(15, 15, 15, 0.85);
+            --border-color: rgba(255, 102, 0, 0.3);
+            --text-glow: 0 0 10px rgba(255, 102, 0, 0.4);
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #e0e0e0;
+            font-family: 'JetBrains Mono', monospace;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Moving Grid Background */
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0; width: 200vw; height: 200vh;
+            background-image: 
+                linear-gradient(rgba(255, 102, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 102, 0, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            animation: gridMove 40s linear infinite;
+        }
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-50px, -50px); }
+        }
+
+        .main-container {
+            width: 95vw;
+            height: 90vh;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 20px;
+        }
+
+        /* --- LEFT PANEL (INPUT) --- */
+        .input-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary-orange);
+            text-shadow: var(--text-glow);
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .tagline {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-label {
+            color: var(--primary-orange);
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .custom-input {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid #333;
+            color: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            transition: 0.3s;
+        }
+
+        .custom-input:focus {
+            background: #000;
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 15px rgba(255, 102, 0, 0.2);
+            outline: none;
+            color: #fff;
+        }
+
+        .btn-audit {
+            background: var(--primary-orange);
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            padding: 15px;
+            border: none;
+            border-radius: 6px;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .btn-audit:hover {
+            background: #ff8533;
+            box-shadow: 0 0 20px var(--primary-orange);
+            transform: translateY(-2px);
+        }
+
+        /* --- RIGHT PANEL (OUTPUT) --- */
+        .output-panel {
+            background: rgba(10, 10, 10, 0.95);
+            border: 1px solid #333;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Important for scroll */
+        }
+
+        .terminal-header {
+            background: #1a1a1a;
+            padding: 10px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .terminal-content {
+            padding: 30px;
+            overflow-y: auto; /* Scroll is here */
+            height: 100%;
+            position: relative;
+        }
+
+        /* --- FORCE WHITE TEXT IN OUTPUT --- */
+        #result-area {
+            color: #ffffff !important;
+        }
+        
+        /* Overriding Bootstrap Colors for Dark Mode */
+        .card { background: transparent !important; border: 1px solid #444 !important; }
+        .card-header { background: #222 !important; color: var(--primary-orange) !important; border-bottom: 1px solid #444; }
+        .card-body { color: #ffffff !important; }
+        
+        .table { color: #ffffff !important; border-color: #444 !important; }
+        .table th { background: #111 !important; color: var(--primary-orange) !important; border-color: #444; }
+        .table td { background: transparent !important; color: #ffffff !important; border-color: #444; }
+        
+        .text-muted { color: #b0b0b0 !important; } /* Make muted text lighter */
+        .text-dark { color: #ffffff !important; } /* Keep badges readable */
+        
+        h1, h2, h3, h4, h5, h6 { color: #ffffff !important; }
+        .badge { font-family: 'JetBrains Mono', monospace; }
+
+        /* Loader & Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #444;
+            text-align: center;
+        }
+        .loader-container {
+            display: none;
+            text-align: center;
+            margin-top: 20%;
+        }
+        .matrix-text {
+            color: var(--primary-orange);
+            font-size: 0.9rem;
+            margin-top: 15px;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0.5; } }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-orange); }
+    </style>
+</head>
+<body>
+
+    <div class="grid-bg"></div>
+
+    <div class="container main-container">
+        
+        <div class="input-panel">
+            <h1>CodeCred AI</h1>
+            <p class="tagline">AI-POWERED RESUME AND GITHUB VERIFICATION TOOL</p>
+            
+            <form id="auditForm">
+                <div class="mb-4">
+                    <label class="form-label"><i class="fa-brands fa-github me-2"></i>GitHub Username</label>
+                    <input type="text" id="username" class="form-control custom-input" placeholder="e.g. torvalds" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label"><i class="fa-solid fa-file-pdf me-2"></i>Upload Resume</label>
+                    <input type="file" id="resume" class="form-control custom-input" accept=".pdf" required>
+                </div>
+
+                <button type="submit" class="btn btn-audit w-100">
+                    <i class="fa-solid fa-radar me-2"></i> Initiate Scan
+                </button>
+            </form>
+            
+            <div class="mt-4 text-center">
+                <span class="badge bg-dark border border-secondary text-secondary"></span>
+            </div>
+        </div>
+
+        <div class="output-panel">
+            <div class="terminal-header">
+                <span><i class="fa-solid fa-terminal me-2"></i> /BIN/OUTPUT_LOG</span>
+                <span>STATUS: <span id="status-indicator" class="text-secondary">IDLE</span></span>
+            </div>
+            
+            <div class="terminal-content">
+                
+                <div id="empty-state" class="empty-state">
+                    <i class="fa-solid fa-microchip" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.5;"></i>
+                    <h4>SYSTEM READY</h4>
+                    <p>Awaiting input parameters to begin audit.</p>
+                </div>
+
+                <div id="loader" class="loader-container">
+                    <div class="spinner-border text-warning" role="status" style="width: 3rem; height: 3rem;"></div>
+                    <div class="matrix-text" id="loading-text">INITIALIZING...</div>
+                    <div class="progress mt-3 bg-dark" style="height: 2px; width: 60%; margin: 15px auto;">
+                        <div class="progress-bar bg-warning" style="width: 0%" id="progress-bar"></div>
+                    </div>
+                </div>
+
+                <div id="result-area" class="fade-in" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loadingSteps = [
+            { text: "CONNECTING TO GITHUB API...", pct: 10 },
+            { text: "SCANNING REPOSITORIES...", pct: 30 },
+            { text: "ANALYZING DEPENDENCIES...", pct: 50 },
+            { text: "CHECKING FOR DSA/CP PATTERNS...", pct: 70 },
+            { text: "CROSS-REFERENCING RESUME...", pct: 90 },
+            { text: "GENERATING REPORT...", pct: 100 }
+        ];
+
+        document.getElementById('auditForm').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const emptyState = document.getElementById('empty-state');
+            const loader = document.getElementById('loader');
+            const resultArea = document.getElementById('result-area');
+            const loadText = document.getElementById('loading-text');
+            const progressBar = document.getElementById('progress-bar');
+            const statusInd = document.getElementById('status-indicator');
+            const submitBtn = document.querySelector('button[type="submit"]');
+
+            emptyState.style.display = "none";
+            resultArea.style.display = "none";
+            loader.style.display = "block";
+            statusInd.innerText = "RUNNING";
+            statusInd.className = "text-warning";
+            submitBtn.disabled = true;
+
+            let step = 0;
+            const interval = setInterval(() => {
+                if (step < loadingSteps.length) {
+                    loadText.innerText = loadingSteps[step].text;
+                    progressBar.style.width = loadingSteps[step].pct + "%";
+                    step++;
+                }
+            }, 800);
+
+            const fd = new FormData();
+            fd.append('username', document.getElementById('username').value); 
+            fd.append('resume', document.getElementById('resume').files[0]);
+
+            try {
+                const res = await fetch('http://127.0.0.1:5000/analyze', { method: 'POST', body: fd });
+                const data = await res.json();
+                
+                clearInterval(interval);
+                loader.style.display = "none";
+                resultArea.innerHTML = data.analysis;
+                resultArea.style.display = "block";
+                
+                statusInd.innerText = "COMPLETE";
+                statusInd.className = "text-success";
+
+            } catch (err) {
+                clearInterval(interval);
+                loader.style.display = "none";
+                resultArea.style.display = "block";
+                resultArea.innerHTML = `<div class="alert alert-danger">ERROR: ${err.message}</div>`;
+                statusInd.innerText = "FAILED";
+                statusInd.className = "text-danger";
+            } finally {
+                submitBtn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>
