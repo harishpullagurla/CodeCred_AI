@@ -49,14 +49,20 @@ This makes it useful for:
 ## 📂 Project Structure
 
 ```bash
-CodeCred-AI/
+CodeCred_AI
+│
 ├── app.py
 ├── requirements.txt
-├── .env
-└── services/
-    ├── ai_service.py
-    ├── github_service.py
-    └── pdf_service.py
+├── Procfile
+├── .gitignore
+│
+├── services
+│   ├── ai_service.py
+│   ├── github_service.py
+│   └── pdf_service.py
+│
+└── templates
+    └── index.html
 ````
 
 ---
